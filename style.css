@@ -1,0 +1,502 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f8f8f8;
+    color: #222;
+}
+.header {
+    background: #e0e0e0;
+    padding: 20px 0 10px 0;
+    text-align: center;
+    border-bottom: 3px solid #0099cc;
+}
+.header-content h1 {
+    margin: 0 0 5px 0;
+    font-size: 2em;
+    color: #0099cc;
+}
+.header-content p {
+    margin: 0 0 10px 0;
+    font-size: 1.1em;
+    color: #444;
+}
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    background: #0099cc;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.menu li {
+    margin: 0;
+    display: inline;
+}
+.menu a {
+    display: block;
+    padding: 12px 30px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s;
+    font-size: 16px;
+}
+.menu a:hover {
+    background: #0077a3;
+}
+main {
+    max-width: 900px;
+    margin: 30px auto 30px auto;
+    background: #fafafa;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+h2 {
+    color: #0099cc;
+    margin-top: 0;
+}
+
+/* Стили для страницы описания товара (пункт 4) */
+.product-heading {
+    color: #000;
+    font-size: 18px;
+    font-weight: 400;
+    background-color: #eaeaea;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 5px;
+}
+
+.product-short-desc {
+    color: #707070;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 16px;
+    margin-bottom: 15px;
+}
+
+.product-full-desc {
+    color: #484343;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.product-features {
+    list-style-image: url('img/bullet.png'); /* Заменить на реальный путь к изображению маркера */
+    padding-left: 25px;
+    color: #333;
+    font-size: 15px;
+}
+
+.product-image {
+    border: 3px solid #0099cc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 0 15px 15px 0;
+    float: left;
+    cursor: pointer;
+}
+
+/* Стили для боковой панели и меню */
+.side-menu {
+    height: 100vh;
+    min-height: 100vh;
+}
+
+.side-menu a {
+    display: block;
+    padding: 8px 0;
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 10px 0;
+    transition: color 0.2s;
+}
+
+.side-menu a:hover, .side-menu a.active {
+    color: #0099cc;
+}
+
+/* Стили для форм на странице контактов (пункт 5) */
+.contact-form {
+    max-width: 500px;
+    margin: 0 auto 30px auto;
+    padding: 20px 25px;
+    background: #f5faff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,153,204,0.06);
+    border: 1px solid #cce6f6;
+}
+
+.contact-form label {
+    font-weight: bold;
+    color: #0099cc;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #b3d8ea;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #444;
+    box-sizing: border-box;
+    background: #fff;
+    height: 40px;
+}
+
+.contact-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.contact-form button {
+    background: #0099cc;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.contact-form button:hover {
+    background: #0077a3;
+}
+
+/* Стили для формы отзывов и элементов управления (пункт 7) */
+.feedback-form {
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+    padding: 25px;
+    background: #f5faff;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    border: 1px solid #cce6f6;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cce6f6;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #444;
+}
+
+.form-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cce6f6;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 14px;
+    color: #444;
+}
+
+.form-check {
+    margin-bottom: 10px;
+}
+
+.form-check-input {
+    margin-right: 10px;
+}
+
+.btn-primary {
+    background: #0099cc;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: #0077a3;
+}
+
+/* Стили для формы регистрации и авторизации (пункт 7) */
+.auth-form {
+    max-width: 400px;
+    margin: 30px auto;
+    padding: 25px;
+    background: #f5faff;
+    border-radius: 8px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+    border: 1px solid #cce6f6;
+}
+
+.auth-form h2 {
+    text-align: center;
+    color: #0099cc;
+    margin-bottom: 20px;
+}
+
+footer.footer {
+    background: #e0e0e0;
+    text-align: center;
+    padding: 15px 0 10px 0;
+    font-size: 1em;
+    color: #444;
+    border-top: 3px solid #0099cc;
+    margin-top: 40px;
+}
+
+hr {
+    border: none;
+    border-top: 2px solid #0099cc;
+    margin: 20px 0;
+}
+
+.catalog-list {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.catalog-item {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 18px 12px 12px 12px;
+    text-align: center;
+    width: 210px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s;
+}
+
+.catalog-item:hover {
+    box-shadow: 0 4px 16px rgba(0,153,204,0.12);
+}
+
+.catalog-item img {
+    border-radius: 6px;
+    margin-bottom: 10px;
+    max-width: 100%;
+    height: auto;
+}
+
+.catalog-item p {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+/* Дополнительные стили для навигации (пункт 8) */
+.main-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    background: #0099cc;
+    border-radius: 5px;
+}
+
+.main-menu li {
+    display: inline;
+    margin: 0;
+}
+
+.main-menu a {
+    display: block;
+    padding: 12px 25px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+.main-menu a:hover {
+    background: #0077a3;
+}
+
+/* Общие стили для сайта */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+/* Стили для кнопок авторизации */
+.auth-btn {
+    padding: 5px 10px;
+    background-color: #337ab7;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    color: white !important;
+    text-decoration: none;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    height: auto;
+    line-height: normal;
+    margin: 0;
+    outline: none;
+    box-shadow: none;
+}
+
+.auth-btn:hover {
+    background-color: #286090;
+    color: white !important;
+    text-decoration: none;
+}
+
+/* Стили для кнопки button */
+button.auth-btn {
+    font-family: inherit;
+    padding: 5px 10px !important;
+    margin: 0 !important;
+    border: none !important;
+    background-color: #337ab7 !important;
+    color: white !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    text-align: center !important;
+    font-size: 14px !important;
+    height: auto !important;
+    line-height: normal !important;
+    text-decoration: none !important;
+}
+
+/* Принудительное переопределение стандартных стилей браузера */
+input[type="submit"].auth-btn {
+    font-family: inherit;
+    padding: 5px 10px !important;
+    margin: 0 !important;
+    border: none !important;
+    background-color: #337ab7 !important;
+    color: white !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    text-align: center !important;
+    font-size: 14px !important;
+    height: auto !important;
+    line-height: normal !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+}
+
+/* Стили для меню */
+.side-menu {
+    padding: 15px 0;
+}
+
+.side-menu a {
+    display: block;
+    padding: 10px 5px;
+    margin: 0 5px 5px;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: background 0.3s;
+}
+
+.side-menu a:hover {
+    background: #ff9933;
+}
+
+.side-menu a.active {
+    background: #fff;
+    color: #ff8000;
+    font-weight: bold;
+}
+
+/* Стили для главного меню */
+.main-menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.main-menu li {
+    margin: 0 15px;
+}
+
+.main-menu a {
+    text-decoration: none;
+    color: #0099cc;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.main-menu a:hover {
+    color: #ff8000;
+}
+
+/* Дополнительные стили для форм */
+.btn-primary {
+    background-color: #0099cc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-primary:hover {
+    background-color: #0077aa;
+}
+
+.form-control {
+    width: 95%;
+    max-width: 400px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Стили для логотипа */
+.logo-img {
+    max-width: 120px;
+    height: auto;
+}
+
+/* Стили для баннеров */
+.banner-img {
+    border: 2px solid #fff;
+    border-radius: 5px;
+    transition: transform 0.3s;
+}
+
+.banner-img:hover {
+    transform: scale(1.05);
+}
+
+/* Стили для полей ввода авторизации */
+.auth-input {
+    margin-bottom: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+} 
