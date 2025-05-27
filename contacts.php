@@ -8,7 +8,7 @@ if (isset($_SESSION['user_id'])) {
     $host = 'localhost';
     $dbname = 'dental_clinic';
     $user = 'root';
-    $pass = '';
+    $pass = '1234';
     $charset = 'utf8mb4';
 
     // Настройки для PDO
@@ -34,6 +34,23 @@ if (isset($_SESSION['user_id'])) {
         // В случае ошибки оставляем email пустым
     }
 }
+
+// Получаем ошибки и данные формы из сессии
+$errors = isset($_SESSION['contact_errors']) ? $_SESSION['contact_errors'] : [];
+$formData = isset($_SESSION['contact_form_data']) ? $_SESSION['contact_form_data'] : [
+    'name' => isset($_SESSION['user_id']) ? $_SESSION['name'] : '',
+    'email' => $user_email,
+    'subject' => '',
+    'message' => ''
+];
+$success = isset($_SESSION['contact_success']) ? $_SESSION['contact_success'] : '';
+$error = isset($_SESSION['contact_error']) ? $_SESSION['contact_error'] : '';
+
+// Очищаем данные сессии
+unset($_SESSION['contact_errors']);
+unset($_SESSION['contact_form_data']);
+unset($_SESSION['contact_success']);
+unset($_SESSION['contact_error']);
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -77,6 +94,7 @@ if (isset($_SESSION['user_id'])) {
             color: white;
         }
     </style>
+<script src="fix_styles.js"></script>
 </head>
 <body>
 <table border="0" width="900" cellpadding="0" cellspacing="0" align="center" bgcolor="#ff8000">
@@ -139,25 +157,48 @@ if (isset($_SESSION['user_id'])) {
         </td>
         <td valign="top">
             <h2 align="center">Напишите нам</h2>
-            <form class="contact-form">
+            
+            <?php if (!empty($success)): ?>
+            <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #c3e6cb;">
+                <?php echo htmlspecialchars($success); ?>
+            </div>
+            <?php endif; ?>
+            
+            <?php if (!empty($error)): ?>
+            <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                <?php echo htmlspecialchars($error); ?>
+            </div>
+            <?php endif; ?>
+            
+            <?php if (!empty($errors)): ?>
+            <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                <ul style="margin: 0; padding-left: 20px;">
+                    <?php foreach ($errors as $err): ?>
+                    <li><?php echo htmlspecialchars($err); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            <?php endif; ?>
+            
+            <form class="contact-form" method="post" action="process_contact.php">
                 <div class="form-group">
                     <label for="name">Имя:</label>
-                    <input type="text" id="name" name="name" class="form-control">
+                    <input type="text" id="name" name="name" class="form-control" value="<?php echo htmlspecialchars($formData['name'] ?? ''); ?>">
                 </div>
                 
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" class="form-control">
+                    <input type="email" id="email" name="email" class="form-control" value="<?php echo htmlspecialchars($formData['email'] ?? ''); ?>">
                 </div>
                 
                 <div class="form-group">
                     <label for="subject">Тема:</label>
-                    <input type="text" id="subject" name="subject" class="form-control">
+                    <input type="text" id="subject" name="subject" class="form-control" value="<?php echo htmlspecialchars($formData['subject'] ?? ''); ?>">
                 </div>
                 
                 <div class="form-group">
                     <label for="message">Сообщение:</label>
-                    <textarea id="message" name="message" rows="5" class="form-control"></textarea>
+                    <textarea id="message" name="message" rows="5" class="form-control"><?php echo htmlspecialchars($formData['message'] ?? ''); ?></textarea>
                 </div>
                 
                 <button type="submit" class="btn-primary">Отправить</button>

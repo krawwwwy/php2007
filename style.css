@@ -301,43 +301,36 @@ hr {
     font-size: 1.1em;
 }
 
-/* Дополнительные стили для навигации (пункт 8) */
+/* Стили для навигации (пункт 8) */
 .main-menu {
     list-style: none;
-    padding: 0;
+    padding: 10px 0;
     margin: 0;
     display: flex;
     justify-content: center;
-    background: #0099cc;
+    background: #fff;
     border-radius: 5px;
 }
 
 .main-menu li {
     display: inline;
-    margin: 0;
+    margin: 0 15px;
 }
 
 .main-menu a {
     display: block;
-    padding: 12px 25px;
-    color: #fff;
+    padding: 8px 15px;
+    color: #333;
     text-decoration: none;
     font-weight: bold;
     font-size: 16px;
-    transition: background 0.3s;
+    transition: all 0.3s;
+    border-radius: 4px;
 }
 
 .main-menu a:hover {
-    background: #0077a3;
-}
-
-/* Общие стили для сайта */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f8f8f8;
-    color: #333;
+    background: #0099cc;
+    color: #fff;
 }
 
 /* Стили для кнопок авторизации */
@@ -348,21 +341,43 @@ body {
     border-radius: 4px;
     font-size: 14px;
     color: white !important;
-    text-decoration: none;
+    text-decoration: none !important;
     cursor: pointer;
     text-align: center;
-    display: inline-block;
+    display: inline-block !important;
     height: auto;
     line-height: normal;
     margin: 0;
     outline: none;
     box-shadow: none;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .auth-btn:hover {
     background-color: #286090;
     color: white !important;
-    text-decoration: none;
+    text-decoration: none !important;
+}
+
+/* Стили для баннеров */
+.banner-img {
+    border: 2px solid #fff;
+    border-radius: 5px;
+    transition: transform 0.3s;
+}
+
+.banner-img:hover {
+    transform: scale(1.05);
+}
+
+/* Стили для полей ввода авторизации */
+.auth-input {
+    margin-bottom: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
 }
 
 /* Стили для кнопки button */
@@ -381,6 +396,9 @@ button.auth-btn {
     height: auto !important;
     line-height: normal !important;
     text-decoration: none !important;
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* Принудительное переопределение стандартных стилей браузера */
@@ -400,6 +418,9 @@ input[type="submit"].auth-btn {
     line-height: normal !important;
     -webkit-appearance: none !important;
     appearance: none !important;
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* Стили для меню */
@@ -425,31 +446,6 @@ input[type="submit"].auth-btn {
     background: #fff;
     color: #ff8000;
     font-weight: bold;
-}
-
-/* Стили для главного меню */
-.main-menu {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.main-menu li {
-    margin: 0 15px;
-}
-
-.main-menu a {
-    text-decoration: none;
-    color: #0099cc;
-    font-weight: bold;
-    transition: color 0.3s;
-}
-
-.main-menu a:hover {
-    color: #ff8000;
 }
 
 /* Дополнительные стили для форм */
@@ -479,24 +475,5 @@ input[type="submit"].auth-btn {
 .logo-img {
     max-width: 120px;
     height: auto;
-}
-
-/* Стили для баннеров */
-.banner-img {
-    border: 2px solid #fff;
-    border-radius: 5px;
-    transition: transform 0.3s;
-}
-
-.banner-img:hover {
-    transform: scale(1.05);
-}
-
-/* Стили для полей ввода авторизации */
-.auth-input {
-    margin-bottom: 5px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
 } 
+

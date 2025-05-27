@@ -485,7 +485,7 @@ if (isset($_GET['query']) && !empty($_GET['query'])) {
             display: inline-block;
             margin-top: 8px;
             padding: 6px 15px;
-            background: #fff;
+            background: #fff;как
             text-decoration: none;
             border-radius: 3px;
             color: #ff8000;
@@ -498,6 +498,7 @@ if (isset($_GET['query']) && !empty($_GET['query'])) {
             color: white;
         }
     </style>
+<script src="fix_styles.js"></script>
 </head>
 <body>
 <table border="0" width="900" cellpadding="0" cellspacing="0" align="center" bgcolor="#ff8000">

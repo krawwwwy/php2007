@@ -451,6 +451,7 @@ if (isset($_POST['search_query']) && !empty($_POST['search_query'])) {
             color: white;
         }
     </style>
+<script src="fix_styles.js"></script>
 </head>
 <body>
 <table border="0" width="900" cellpadding="0" cellspacing="0" align="center" bgcolor="#ff8000">

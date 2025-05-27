@@ -183,6 +183,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             color: white;
         }
     </style>
+<script src="fix_styles.js"></script>
 </head>
 <body>
 <table border="0" width="900" cellpadding="0" cellspacing="0" align="center" bgcolor="#ff8000">
