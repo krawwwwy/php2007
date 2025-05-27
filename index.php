@@ -34,6 +34,22 @@ if (isset($_SESSION['user_id'])) {
         // В случае ошибки оставляем email пустым
     }
 }
+
+// Определяем массив со статическими изображениями для слайдера
+$slides = [
+    [
+        'image' => 'img/product1.jpg',
+        'name' => 'Лечение зубов'
+    ],
+    [
+        'image' => 'img/product2.jpg',
+        'name' => 'Профессиональная чистка'
+    ],
+    [
+        'image' => 'img/product3.jpg',
+        'name' => 'Имплантация зубов'
+    ]
+];
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -134,8 +150,156 @@ if (isset($_SESSION['user_id'])) {
             background: #ff9933;
             color: white;
         }
+        
+        /* Стили для слайдера */
+        .slider-container {
+            position: relative;
+            max-width: 100%;
+            margin: 0 auto 30px;
+            overflow: hidden;
+        }
+        .slider {
+            position: relative;
+        }
+        .slide {
+            display: none;
+            position: relative;
+        }
+        .slide img {
+            border-radius: 8px;
+            display: block;
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+        }
+        .slide-caption {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            margin-top: -22px;
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+        }
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .dot {
+            cursor: pointer;
+            height: 12px;
+            width: 12px;
+            margin: 0 5px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.6s ease;
+        }
+        .active, .dot:hover {
+            background-color: #717171;
+        }
+        .fade {
+            animation-name: fade;
+            animation-duration: 1.5s;
+        }
+        @keyframes fade {
+            from {opacity: .4} 
+            to {opacity: 1}
+        }
+        .dots-container {
+            margin-top: 10px;
+        }
+        
+        /* Стили для футера */
+        .footer-links {
+            margin-top: 10px;
+        }
+        .footer-links a {
+            color: #555;
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+            color: #ff8000;
+        }
     </style>
-<script src="fix_styles.js"></script>
+    <script src="fix_styles.js"></script>
+    <script>
+        // Скрипт для слайдера
+        let slideIndex = 1;
+        
+        // Ждем когда DOM полностью загрузится
+        document.addEventListener("DOMContentLoaded", function() {
+            showSlides(slideIndex);
+            
+            // Автоматическая смена слайдов каждые 5 секунд
+            setInterval(function() {
+                plusSlides(1);
+            }, 5000);
+        });
+        
+        // Управление переключением слайдов (следующий/предыдущий)
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+        
+        // Управление текущим слайдом
+        function currentSlide(n) {
+            showSlides(slideIndex = n);
+        }
+        
+        // Основная функция отображения слайдов
+        function showSlides(n) {
+            let i;
+            let slides = document.getElementsByClassName("slide");
+            let dots = document.getElementsByClassName("dot");
+            
+            // Проверка граничных значений
+            if (n > slides.length) {slideIndex = 1}    
+            if (n < 1) {slideIndex = slides.length}
+            
+            // Скрываем все слайды
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            
+            // Убираем активный класс со всех точек
+            for (i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" active", "");
+            }
+            
+            // Показываем текущий слайд и активируем соответствующую точку
+            if (slides.length > 0) {
+                slides[slideIndex-1].style.display = "block";  
+                if (dots.length > 0) {
+                    dots[slideIndex-1].className += " active";
+                }
+            }
+        }
+    </script>
 </head>
 <body>
 <table border="0" width="900" cellpadding="0" cellspacing="0" align="center" bgcolor="#ff8000">
@@ -199,9 +363,35 @@ if (isset($_SESSION['user_id'])) {
         </td>
         <td valign="top">
             <h2>Добро пожаловать в стоматологическую клинику «Жемчуг»!</h2>
-            <div class="promo">
-                <img src="img/clinic.jpg" alt="Стоматологическая клиника Жемчуг">
+            <div class="slider-container">
+                <div class="slider">
+                    <!-- Статические слайды с изображениями продуктов -->
+                    <div class="slide fade">
+                        <img src="img/product1.jpg" alt="Лечение зубов">
+                        <div class="slide-caption">Лечение зубов</div>
+                    </div>
+                    <div class="slide fade">
+                        <img src="img/product2.jpg" alt="Профессиональная чистка">
+                        <div class="slide-caption">Профессиональная чистка</div>
+                    </div>
+                    <div class="slide fade">
+                        <img src="img/product3.jpg" alt="Имплантация зубов">
+                        <div class="slide-caption">Имплантация зубов</div>
+                    </div>
+                    
+                    <!-- Кнопки навигации -->
+                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+                </div>
+                
+                <!-- Индикаторы -->
+                <div class="dots-container" style="text-align:center">
+                    <span class="dot" onclick="currentSlide(1)"></span>
+                    <span class="dot" onclick="currentSlide(2)"></span>
+                    <span class="dot" onclick="currentSlide(3)"></span>
+                </div>
             </div>
+            
             <p>Наша клиника предлагает полный спектр стоматологических услуг для всей семьи. Мы используем современное оборудование и материалы, что позволяет нам гарантировать высокое качество лечения.</p>
             <p>У нас работают опытные врачи, которые постоянно повышают свою квалификацию и следят за последними тенденциями в стоматологии.</p>
             
@@ -246,6 +436,11 @@ if (isset($_SESSION['user_id'])) {
         <td align="center" style="border-top:1px solid #ccc;padding-top:10px;">
             <hr style="width:900px; margin:auto;">
             &copy; 2025 Стоматологическая клиника «Жемчуг». Все права защищены.
+            <div class="footer-links">
+                <a href="javascript:void(0);" onclick="window.open('privacy.php', 'Политика конфиденциальности', 'width=800,height=600,scrollbars=yes');">Политика конфиденциальности</a>
+                <a href="contacts.php">Контакты</a>
+                <a href="about.php">О клинике</a>
+            </div>
         </td>
     </tr>
 </table>
