@@ -5,7 +5,7 @@ session_start();
 $host = 'localhost';
 $dbname = 'dental_clinic';
 $user = 'root';
-$pass = '';
+$pass = '1234';
 $charset = 'utf8mb4';
 
 // Настройки для PDO

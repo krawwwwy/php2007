@@ -8,7 +8,7 @@ if (isset($_SESSION['user_id'])) {
     $host = 'localhost';
     $dbname = 'dental_clinic';
     $user = 'root';
-    $pass = '';
+    $pass = '1234';
     $charset = 'utf8mb4';
 
     // Настройки для PDO
@@ -59,7 +59,8 @@ $services_backup = [
         'duration' => '30-90 мин.',
         'doctor' => 'стоматолог-терапевт',
         'image' => 'img/product1.jpg',
-        'first_letter' => 'Л'
+        'first_letter' => 'Л',
+        'category_id' => 1
     ],
     [
         'id' => 2,
@@ -69,7 +70,8 @@ $services_backup = [
         'duration' => '60-120 мин.',
         'doctor' => 'стоматолог-ортопед',
         'image' => 'img/product2.jpg',
-        'first_letter' => 'П'
+        'first_letter' => 'П',
+        'category_id' => 2
     ],
     [
         'id' => 3,
@@ -79,7 +81,8 @@ $services_backup = [
         'duration' => '60-180 мин.',
         'doctor' => 'стоматолог-хирург',
         'image' => 'img/product3.jpg',
-        'first_letter' => 'И'
+        'first_letter' => 'И',
+        'category_id' => 2
     ],
     [
         'id' => 4,
@@ -89,7 +92,8 @@ $services_backup = [
         'duration' => '60-90 мин.',
         'doctor' => 'стоматолог-терапевт',
         'image' => 'img/tooth-whitening.jpg',
-        'first_letter' => 'О'
+        'first_letter' => 'О',
+        'category_id' => 1
     ],
     [
         'id' => 5,
@@ -99,7 +103,8 @@ $services_backup = [
         'duration' => '30-60 мин.',
         'doctor' => 'ортодонт',
         'image' => 'img/banner1.jpg',
-        'first_letter' => 'О'
+        'first_letter' => 'О',
+        'category_id' => 3
     ],
     [
         'id' => 6,
@@ -109,36 +114,85 @@ $services_backup = [
         'duration' => '10-20 мин.',
         'doctor' => 'рентгенолог',
         'image' => 'img/banner3.jpg',
-        'first_letter' => 'Р'
+        'first_letter' => 'Р',
+        'category_id' => 3
     ]
+];
+
+// Резервные категории на случай недоступности БД
+$categories_backup = [
+    ['id' => 1, 'name' => 'Терапевтические услуги', 'description' => 'Лечебные процедуры для оздоровления зубов и десен'],
+    ['id' => 2, 'name' => 'Хирургические услуги', 'description' => 'Процедуры по хирургическому вмешательству в полости рта'],
+    ['id' => 3, 'name' => 'Диагностические услуги', 'description' => 'Диагностика состояния полости рта и зубов']
 ];
 
 // Инициализация переменных
 $db_connection = false;
 $services = [];
+$categories = [];
 $error_message = '';
 $creation_message = '';
 $search_query = '';
+$current_category = 0; // 0 означает "все категории"
+
+// Получаем категорию из GET-параметра
+if (isset($_GET['category'])) {
+    $current_category = (int)$_GET['category'];
+}
 
 // Функции для работы с сервисами
-function searchServicesByName($pdo, $searchQuery) {
+function searchServicesByName($pdo, $searchQuery, $categoryId = 0) {
     try {
         $searchQuery = "%" . $searchQuery . "%";
-        $stmt = $pdo->prepare("SELECT * FROM services WHERE title_value LIKE :query");
-        $stmt->execute(['query' => $searchQuery]);
+        
+        if ($categoryId > 0) {
+            $stmt = $pdo->prepare("SELECT * FROM services WHERE title_value LIKE :query AND category_id = :category_id");
+            $stmt->execute(['query' => $searchQuery, 'category_id' => $categoryId]);
+        } else {
+            $stmt = $pdo->prepare("SELECT * FROM services WHERE title_value LIKE :query");
+            $stmt->execute(['query' => $searchQuery]);
+        }
+        
         return $stmt->fetchAll();
     } catch (PDOException $e) {
         return [];
     }
 }
 
-function searchServicesByNameArray($services, $searchQuery) {
+function searchServicesByNameArray($services, $searchQuery, $categoryId = 0) {
     $results = [];
     $searchQuery = mb_strtolower($searchQuery, 'UTF-8');
     
     foreach ($services as $service) {
         $title = mb_strtolower($service['title_value'], 'UTF-8');
+        
+        if ($categoryId > 0 && $service['category_id'] != $categoryId) {
+            continue; // Пропускаем услуги не из указанной категории
+        }
+        
         if (mb_strpos($title, $searchQuery, 0, 'UTF-8') !== false) {
+            $results[] = $service;
+        }
+    }
+    
+    return $results;
+}
+
+function getServicesByCategory($pdo, $categoryId) {
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM services WHERE category_id = :category_id");
+        $stmt->execute(['category_id' => $categoryId]);
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+function filterServicesByCategory($services, $categoryId) {
+    $results = [];
+    
+    foreach ($services as $service) {
+        if ($service['category_id'] == $categoryId) {
             $results[] = $service;
         }
     }
@@ -165,6 +219,33 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=$charset", $user, $pass, $options);
     $db_connection = true;
     
+    // Проверяем существование таблицы categories
+    $stmt = $pdo->query("SHOW TABLES LIKE 'categories'");
+    $categoriesTableExists = $stmt->fetch();
+    
+    // Если таблицы категорий нет - создаем её
+    if (!$categoriesTableExists) {
+        // Создаем таблицу категорий
+        $pdo->exec("CREATE TABLE `categories` (
+            `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `name` VARCHAR(255) NOT NULL,
+            `description` TEXT
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        
+        // Вставляем категории
+        $stmt = $pdo->prepare("INSERT INTO `categories` (name, description) VALUES (:name, :description)");
+        foreach ($categories_backup as $category) {
+            $stmt->execute([
+                'name' => $category['name'],
+                'description' => $category['description']
+            ]);
+        }
+    }
+    
+    // Получаем список всех категорий
+    $stmt = $pdo->query("SELECT * FROM categories ORDER BY id");
+    $categories = $stmt->fetchAll();
+    
     // Проверяем существование таблицы services
     $stmt = $pdo->query("SHOW TABLES LIKE 'services'");
     $tableExists = $stmt->fetch();
@@ -179,7 +260,8 @@ try {
             `duration` VARCHAR(100) NOT NULL,
             `doctor` VARCHAR(255) NOT NULL,
             `image` VARCHAR(255) NOT NULL,
-            `first_letter` CHAR(1) NOT NULL
+            `first_letter` CHAR(1) NOT NULL,
+            `category_id` INT(11) UNSIGNED NOT NULL
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
         
         // Вставляем данные услуг
@@ -191,7 +273,8 @@ try {
                 'duration' => '30-90 мин.',
                 'doctor' => 'стоматолог-терапевт',
                 'image' => 'img/product1.jpg',
-                'first_letter' => 'Л'
+                'first_letter' => 'Л',
+                'category_id' => 1
             ],
             [
                 'title_value' => 'Протезирование',
@@ -200,7 +283,8 @@ try {
                 'duration' => '60-120 мин.',
                 'doctor' => 'стоматолог-ортопед',
                 'image' => 'img/product2.jpg',
-                'first_letter' => 'П'
+                'first_letter' => 'П',
+                'category_id' => 2
             ],
             [
                 'title_value' => 'Имплантация',
@@ -209,7 +293,8 @@ try {
                 'duration' => '60-180 мин.',
                 'doctor' => 'стоматолог-хирург',
                 'image' => 'img/product3.jpg',
-                'first_letter' => 'И'
+                'first_letter' => 'И',
+                'category_id' => 2
             ],
             [
                 'title_value' => 'Отбеливание',
@@ -218,7 +303,8 @@ try {
                 'duration' => '60-90 мин.',
                 'doctor' => 'стоматолог-терапевт',
                 'image' => 'img/tooth-whitening.jpg',
-                'first_letter' => 'О'
+                'first_letter' => 'О',
+                'category_id' => 1
             ],
             [
                 'title_value' => 'Ортодонтия',
@@ -227,7 +313,8 @@ try {
                 'duration' => '30-60 мин.',
                 'doctor' => 'ортодонт',
                 'image' => 'img/banner1.jpg',
-                'first_letter' => 'О'
+                'first_letter' => 'О',
+                'category_id' => 3
             ],
             [
                 'title_value' => 'Рентгенология',
@@ -236,15 +323,16 @@ try {
                 'duration' => '10-20 мин.',
                 'doctor' => 'рентгенолог',
                 'image' => 'img/banner3.jpg',
-                'first_letter' => 'Р'
+                'first_letter' => 'Р',
+                'category_id' => 3
             ]
         
         ];
         
         // Подготавливаем запрос на вставку
         $stmt = $pdo->prepare("INSERT INTO `services` 
-            (title_value, content, price, duration, doctor, image, first_letter) 
-            VALUES (:title_value, :content, :price, :duration, :doctor, :image, :first_letter)");
+            (title_value, content, price, duration, doctor, image, first_letter, category_id) 
+            VALUES (:title_value, :content, :price, :duration, :doctor, :image, :first_letter, :category_id)");
         
         // Вставляем данные
         foreach ($services as $service) {
@@ -255,24 +343,34 @@ try {
                 'duration' => $service['duration'],
                 'doctor' => $service['doctor'],
                 'image' => $service['image'],
-                'first_letter' => $service['first_letter']
+                'first_letter' => $service['first_letter'],
+                'category_id' => $service['category_id']
             ]);
         }
         
         $creation_message = "База данных и таблица с услугами успешно созданы!";
-        
-        // Получаем все услуги из только что созданной таблицы
-        $stmt = $pdo->query("SELECT * FROM services");
+    }
+    
+    // Получаем все услуги из БД, применяя фильтрацию по категории, если выбрана
+    if ($current_category > 0) {
+        $stmt = $pdo->prepare("SELECT * FROM services WHERE category_id = :category_id");
+        $stmt->execute(['category_id' => $current_category]);
         $services = $stmt->fetchAll();
     } else {
-        // Получаем все услуги из БД
         $stmt = $pdo->query("SELECT * FROM services");
         $services = $stmt->fetchAll();
     }
+    
 } catch (PDOException $e) {
-    // Если ошибка подключения к БД, используем резервный массив
+    // Если ошибка подключения к БД, используем резервные данные
     $error_message = $e->getMessage();
-    $services = $services_backup; // Используем резервные данные
+    $services = $services_backup; // Используем резервные данные для услуг
+    $categories = $categories_backup; // Используем резервные данные для категорий
+    
+    // Применяем фильтрацию по категории к резервным данным
+    if ($current_category > 0) {
+        $services = filterServicesByCategory($services_backup, $current_category);
+    }
 }
 
 // Проверяем параметры запроса для поиска
@@ -280,9 +378,9 @@ if (isset($_POST['search_query']) && !empty($_POST['search_query'])) {
     $search_query = trim(strip_tags($_POST['search_query']));
     
     if ($db_connection) {
-        $services = searchServicesByName($pdo, $search_query);
+        $services = searchServicesByName($pdo, $search_query, $current_category);
     } else {
-        $services = searchServicesByNameArray($services_backup, $search_query);
+        $services = searchServicesByNameArray($services_backup, $search_query, $current_category);
     }
 }
 ?>
