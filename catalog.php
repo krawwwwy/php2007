@@ -509,12 +509,29 @@ if (isset($_POST['search_query']) && !empty($_POST['search_query'])) {
         <td width="150" valign="top" align="center" bgcolor="#ff8000" class="side-menu">
             <a href="index.php">Главная</a>
             <a href="catalog.php" class="active">Каталог</a>
+            <?php if(isset($_SESSION['user_id'])): ?>
+            <a href="cart.php">Корзина</a>
+            <?php endif; ?>
             <a href="contacts.php">Контакты</a>
             <a href="about.php">О нас</a>
 
         </td>
         <td valign="top">
             <h2 align="center">Каталог услуг</h2>
+            
+            <?php if(isset($_SESSION['success_message'])): ?>
+            <div class="message success-message">
+                <?= htmlspecialchars($_SESSION['success_message']) ?>
+            </div>
+            <?php unset($_SESSION['success_message']); ?>
+            <?php endif; ?>
+            
+            <?php if(isset($_SESSION['error_message'])): ?>
+            <div class="message error-message">
+                <?= htmlspecialchars($_SESSION['error_message']) ?>
+            </div>
+            <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
             
             <?php if(isset($creation_message)): ?>
             <div class="message success-message">
@@ -565,6 +582,16 @@ if (isset($_POST['search_query']) && !empty($_POST['search_query'])) {
                     echo "<p><strong>Продолжительность:</strong> {$service['duration']}</p>";
                     echo "<p><strong>Врач:</strong> {$service['doctor']}</p>";
                     echo "<a href='{$productLink}' style='display:inline-block;margin-top:10px;padding:5px 15px;background:#0099cc;color:#fff;text-decoration:none;border-radius:3px;'>Подробнее</a>";
+                    
+                    // Добавляем кнопку "Добавить в корзину" только для авторизованных пользователей
+                    if(isset($_SESSION['user_id'])) {
+                        echo "<form method='post' action='add_to_cart.php' style='display:inline-block;margin-left:10px;'>";
+                        echo "<input type='hidden' name='service_id' value='{$service['id']}'>";
+                        echo "<input type='hidden' name='redirect' value='catalog.php'>";
+                        echo "<button type='submit' style='padding:5px 15px;background:#4CAF50;color:#fff;border:none;border-radius:3px;cursor:pointer;'>Добавить в корзину</button>";
+                        echo "</form>";
+                    }
+                    
                     echo "</div>";
                     echo "<div style='clear:both;'></div>";
                     echo "</div>";
@@ -608,6 +635,9 @@ if (isset($_POST['search_query']) && !empty($_POST['search_query'])) {
         <td align="center" style="border-top:1px solid #ccc;padding-top:10px;">
             <hr style="width:900px; margin:auto;">
             &copy; 2025 Стоматологическая клиника «Жемчуг». Все права защищены.
+            <div class="footer-links">
+                <a href="javascript:void(0);" onclick="window.open('privacy.php', 'Политика конфиденциальности', 'width=800,height=600,scrollbars=yes');">Политика конфиденциальности</a>
+            </div>
         </td>
     </tr>
 </table>

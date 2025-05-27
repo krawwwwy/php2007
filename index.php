@@ -357,9 +357,12 @@ $slides = [
         <td width="150" valign="top" align="center" bgcolor="#ff8000" class="side-menu">
             <a href="index.php" class="active">Главная</a>
             <a href="catalog.php">Каталог</a>
+            <?php if(isset($_SESSION['user_id'])): ?>
+            <a href="cart.php">Корзина</a>
+            <?php endif; ?>
             <a href="contacts.php">Контакты</a>
+            <a href="reviews.php">Отзывы</a>
             <a href="about.php">О нас</a>
-
         </td>
         <td valign="top">
             <h2>Добро пожаловать в стоматологическую клинику «Жемчуг»!</h2>
@@ -438,8 +441,6 @@ $slides = [
             &copy; 2025 Стоматологическая клиника «Жемчуг». Все права защищены.
             <div class="footer-links">
                 <a href="javascript:void(0);" onclick="window.open('privacy.php', 'Политика конфиденциальности', 'width=800,height=600,scrollbars=yes');">Политика конфиденциальности</a>
-                <a href="contacts.php">Контакты</a>
-                <a href="about.php">О клинике</a>
             </div>
         </td>
     </tr>

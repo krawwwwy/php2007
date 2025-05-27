@@ -36,27 +36,46 @@ if (isset($_SESSION['user_id'])) {
 }
 
 // Получаем ошибки и данные формы из сессии
-$errors = isset($_SESSION['contact_errors']) ? $_SESSION['contact_errors'] : [];
-$formData = isset($_SESSION['contact_form_data']) ? $_SESSION['contact_form_data'] : [
+$errors = isset($_SESSION['reviews_errors']) ? $_SESSION['reviews_errors'] : [];
+$formData = isset($_SESSION['reviews_form_data']) ? $_SESSION['reviews_form_data'] : [
     'name' => isset($_SESSION['user_id']) ? $_SESSION['name'] : '',
     'email' => $user_email,
-    'subject' => '',
-    'message' => ''
+    'service' => '',
+    'rating' => '',
+    'review' => ''
 ];
-$success = isset($_SESSION['contact_success']) ? $_SESSION['contact_success'] : '';
-$error = isset($_SESSION['contact_error']) ? $_SESSION['contact_error'] : '';
+$success = isset($_SESSION['reviews_success']) ? $_SESSION['reviews_success'] : '';
+$error = isset($_SESSION['reviews_error']) ? $_SESSION['reviews_error'] : '';
 
 // Очищаем данные сессии
-unset($_SESSION['contact_errors']);
-unset($_SESSION['contact_form_data']);
-unset($_SESSION['contact_success']);
-unset($_SESSION['contact_error']);
+unset($_SESSION['reviews_errors']);
+unset($_SESSION['reviews_form_data']);
+unset($_SESSION['reviews_success']);
+unset($_SESSION['reviews_error']);
+
+// Загрузка отображаемых отзывов
+$reviews = [];
+try {
+    if (isset($pdo)) {
+        // Проверяем, существует ли таблица reviews
+        $stmt = $pdo->query("SHOW TABLES LIKE 'reviews'");
+        $tableExists = $stmt->fetch();
+        
+        if ($tableExists) {
+            // Получаем последние 5 одобренных отзывов
+            $stmt = $pdo->query("SELECT * FROM reviews WHERE approved = 1 ORDER BY date_added DESC LIMIT 5");
+            $reviews = $stmt->fetchAll();
+        }
+    }
+} catch (PDOException $e) {
+    // Если ошибка, продолжаем без загрузки отзывов
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Контакты - Стоматологическая клиника Жемчуг</title>
+    <title>Отзывы - Стоматологическая клиника Жемчуг</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .user-info {
@@ -94,6 +113,105 @@ unset($_SESSION['contact_error']);
             color: white;
         }
         
+        /* Стили для отзывов */
+        .reviews-container {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .review-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .review-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .review-author {
+            font-weight: bold;
+            color: #0099cc;
+        }
+        
+        .review-date {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .review-service {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        .review-rating {
+            color: #ff8000;
+            margin-bottom: 10px;
+        }
+        
+        .review-text {
+            line-height: 1.5;
+        }
+        
+        /* Стили для формы */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .rating-select {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .rating-select label {
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .rating-select input {
+            margin-right: 5px;
+        }
+        
+        .btn-primary {
+            background-color: #0099cc;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0077aa;
+        }
+        
         /* Стили для футера */
         .footer-links {
             margin-top: 10px;
@@ -107,6 +225,15 @@ unset($_SESSION['contact_error']);
         .footer-links a:hover {
             text-decoration: underline;
             color: #ff8000;
+        }
+        
+        .banner-img {
+            border: 2px solid #fff;
+            border-radius: 5px;
+            transition: transform 0.3s;
+        }
+        .banner-img:hover {
+            transform: scale(1.05);
         }
     </style>
 <script src="fix_styles.js"></script>
@@ -170,12 +297,12 @@ unset($_SESSION['contact_error']);
             <?php if(isset($_SESSION['user_id'])): ?>
             <a href="cart.php">Корзина</a>
             <?php endif; ?>
-            <a href="contacts.php" class="active">Контакты</a>
-            <a href="reviews.php">Отзывы</a>
+            <a href="contacts.php">Контакты</a>
+            <a href="reviews.php" class="active">Отзывы</a>
             <a href="about.php">О нас</a>
         </td>
         <td valign="top">
-            <h2 align="center">Напишите нам</h2>
+            <h2 align="center">Отзывы пациентов</h2>
             
             <?php if (!empty($success)): ?>
             <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #c3e6cb;">
@@ -199,7 +326,8 @@ unset($_SESSION['contact_error']);
             </div>
             <?php endif; ?>
             
-            <form class="contact-form" method="post" action="process_contact.php">
+            <h3>Оставить отзыв</h3>
+            <form class="contact-form" method="post" action="process_review.php">
                 <div class="form-group">
                     <label for="name">Имя:</label>
                     <input type="text" id="name" name="name" class="form-control" value="<?php echo htmlspecialchars($formData['name'] ?? ''); ?>">
@@ -211,26 +339,68 @@ unset($_SESSION['contact_error']);
                 </div>
                 
                 <div class="form-group">
-                    <label for="subject">Тема:</label>
-                    <input type="text" id="subject" name="subject" class="form-control" value="<?php echo htmlspecialchars($formData['subject'] ?? ''); ?>">
+                    <label for="service">Какую услугу вы получили:</label>
+                    <select id="service" name="service" class="form-control">
+                        <option value="">Выберите услугу</option>
+                        <option value="Лечение зубов" <?php echo ($formData['service'] ?? '') === 'Лечение зубов' ? 'selected' : ''; ?>>Лечение зубов</option>
+                        <option value="Протезирование" <?php echo ($formData['service'] ?? '') === 'Протезирование' ? 'selected' : ''; ?>>Протезирование</option>
+                        <option value="Имплантация" <?php echo ($formData['service'] ?? '') === 'Имплантация' ? 'selected' : ''; ?>>Имплантация</option>
+                        <option value="Отбеливание" <?php echo ($formData['service'] ?? '') === 'Отбеливание' ? 'selected' : ''; ?>>Отбеливание</option>
+                        <option value="Ортодонтия" <?php echo ($formData['service'] ?? '') === 'Ортодонтия' ? 'selected' : ''; ?>>Ортодонтия</option>
+                        <option value="Рентгенология" <?php echo ($formData['service'] ?? '') === 'Рентгенология' ? 'selected' : ''; ?>>Рентгенология</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="message">Сообщение:</label>
-                    <textarea id="message" name="message" rows="5" class="form-control"><?php echo htmlspecialchars($formData['message'] ?? ''); ?></textarea>
+                    <label>Оценка:</label>
+                    <div class="rating-select">
+                        <label><input type="radio" name="rating" value="5" <?php echo ($formData['rating'] ?? '') === '5' ? 'checked' : ''; ?>> 5 </label>
+                        <label><input type="radio" name="rating" value="4" <?php echo ($formData['rating'] ?? '') === '4' ? 'checked' : ''; ?>> 4 </label>
+                        <label><input type="radio" name="rating" value="3" <?php echo ($formData['rating'] ?? '') === '3' ? 'checked' : ''; ?>> 3 </label>
+                        <label><input type="radio" name="rating" value="2" <?php echo ($formData['rating'] ?? '') === '2' ? 'checked' : ''; ?>> 2 </label>
+                        <label><input type="radio" name="rating" value="1" <?php echo ($formData['rating'] ?? '') === '1' ? 'checked' : ''; ?>> 1 </label>
+                    </div>
                 </div>
                 
-                <button type="submit" class="btn-primary">Отправить</button>
+                <div class="form-group">
+                    <label for="review">Ваш отзыв:</label>
+                    <textarea id="review" name="review" rows="5" class="form-control"><?php echo htmlspecialchars($formData['review'] ?? ''); ?></textarea>
+                </div>
+                
+                <button type="submit" class="btn-primary">Отправить отзыв</button>
             </form>
             
-            <h3 class="product-heading">Контактная информация</h3>
-            <div class="product-full-desc">
-                <p>Вы можете связаться с нами любым удобным способом:</p>
-                <p><strong>Телефон:</strong> +7 (495) 123-45-67<br>
-                <strong>Адрес:</strong> г. Москва, ул. Примерная, д. 1<br>
-                <strong>Email:</strong> info@gemchug93.ru</p>
-                <p>Мы работаем ежедневно с 9:00 до 20:00 без выходных.</p>
+            <?php if (!empty($reviews)): ?>
+            <div class="reviews-container">
+                <h3>Отзывы пациентов</h3>
+                
+                <?php foreach ($reviews as $review): ?>
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author"><?= htmlspecialchars($review['name']) ?></span>
+                        <span class="review-date"><?= date('d.m.Y', strtotime($review['date_added'])) ?></span>
+                    </div>
+                    <div class="review-service">Услуга: <?= htmlspecialchars($review['service']) ?></div>
+                    <div class="review-rating">
+                        Оценка: <?php 
+                            for ($i = 0; $i < $review['rating']; $i++) {
+                                echo '★';
+                            }
+                            for ($i = $review['rating']; $i < 5; $i++) {
+                                echo '☆';
+                            }
+                        ?>
+                    </div>
+                    <div class="review-text"><?= nl2br(htmlspecialchars($review['review'])) ?></div>
+                </div>
+                <?php endforeach; ?>
             </div>
+            <?php else: ?>
+            <div class="reviews-container">
+                <p style="text-align: center;">Пока нет отзывов. Будьте первым, кто оставит отзыв о нашей клинике!</p>
+            </div>
+            <?php endif; ?>
+            
         </td>
         <td width="190" valign="top" align="center" bgcolor="#ff8000">
             <a href="https://gemchug93.ru/services/ortodontiya/" style="text-decoration:none;color:#000;">
@@ -260,4 +430,4 @@ unset($_SESSION['contact_error']);
     </tr>
 </table>
 </body>
-</html> 
+</html>

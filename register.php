@@ -320,10 +320,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
                         <input type="password" class="form-control" id="confirm_password" name="confirm_password">
                     </div>
                     
-                    <div class="form-group">
-                        <input type="checkbox" id="privacy_policy" name="privacy_policy" required>
-                        <label for="privacy_policy" style="display:inline;">Я согласен с <a href="javascript:void(0);" onclick="window.open('privacy.php', 'Политика конфиденциальности', 'width=800,height=600,scrollbars=yes');">политикой конфиденциальности</a></label>
-                    </div>
+                    <div class="form-group" style="display: flex; align-items: center; flex-direction: row-reverse; justify-content: flex-start;">
+    <label for="privacy_policy" style="margin-left: 5px; margin-right: 0;">Я согласен с <a href="javascript:void(0);" onclick="window.open('privacy.php', 'Политика конфиденциальности', 'width=800,height=600,scrollbars=yes');">политикой конфиденциальности</a></label>
+    <input type="checkbox" id="privacy_policy" name="privacy_policy" required>
+</div>
+
                     
                     <div align="center">
                         <button type="submit" class="btn-primary" name="register">Зарегистрироваться</button>
